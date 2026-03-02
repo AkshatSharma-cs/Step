@@ -1,84 +1,233 @@
+import java.util.*;
+
 /**
- * ================================================
- * MAIN CLASS - UseCase13PalindromeCheckerApp
- * ================================================
+ * UC13PallindromeCheckerApp
  *
- * Use Case 13: Performance Comparison
+ * Use Case 13:
+ * Algorithm Benchmarking & Complexity Analysis
  *
- * Description:
- * This class measures and compares the execution
- * performance of palindrome validation algorithms.
+ * This class executes all palindrome implementations
+ * from UC02 → UC12 and compares execution time
+ * using System.nanoTime().
  *
- * At this stage, the application:
- * - Uses multiple palindrome strategy implementations
- * - Captures execution start and end time
- * - Calculates total execution duration
- * - Displays benchmarking results
+ * Key Concepts:
+ * - Algorithm benchmarking
+ * - Time complexity observation
+ * - Runtime comparison
  *
- * The goal is to introduce benchmarking concepts.
+ * NOTE:
+ * PalindromeService (UC11)
+ * PalindromeStrategy & StackStrategy (UC12)
+ * are reused — NOT redefined.
  *
  * @author Akshat
  * @version 13.0
  */
+
 public class PalindromeCheckerApp {
 
-    // Strategy 1: String reversal
-    public static boolean isPalindromeReverse(String input) {
-        String reversed = new StringBuilder(input).reverse().toString();
-        return input.equals(reversed);
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("===== UC13 - Full Algorithm Comparison =====");
+        System.out.print("Enter String -> ");
+        String input = sc.nextLine();
+
+        System.out.println("\nRunning All Algorithms...\n");
+
+        // UC02 / UC03
+        run("UC02/UC03 - Basic Loop", input,
+                UC13PallindromeCheckerApp::basicLoop);
+
+        // UC04
+        run("UC04 - Character Array", input,
+                UC13PallindromeCheckerApp::charArrayMethod);
+
+        // UC05
+        run("UC05 - Stack", input,
+                UC13PallindromeCheckerApp::stackMethod);
+
+        // UC06
+        run("UC06 - Queue + Stack", input,
+                UC13PallindromeCheckerApp::queueStackMethod);
+
+        // UC07
+        run("UC07 - Deque", input,
+                UC13PallindromeCheckerApp::dequeMethod);
+
+        // UC08
+        run("UC08 - LinkedList", input,
+                UC13PallindromeCheckerApp::linkedListMethod);
+
+        // UC09
+        run("UC09 - Recursive", input,
+                UC13PallindromeCheckerApp::recursiveMethod);
+
+        // UC10
+        run("UC10 - Normalized", input,
+                UC13PallindromeCheckerApp::normalizedMethod);
+
+        // UC11 (Reuse Service Class)
+        PalindromeService service = new PalindromeService();
+        run("UC11 - OOP Service", input,
+                service::checkPalindrome);
+
+        // UC12 (Reuse Strategy Pattern)
+        PalindromeStrategy strategy = new StackStrategy();
+        run("UC12 - Strategy Pattern (Stack)", input,
+                strategy::check);
+
+        sc.close();
     }
 
-    // Strategy 2: Two-pointer approach
-    public static boolean isPalindromeTwoPointer(String input) {
-        int left = 0, right = input.length() - 1;
-        while (left < right) {
-            if (input.charAt(left) != input.charAt(right)) {
+    // ================= BENCHMARK RUNNER =================
+
+    private static void run(String name,
+                            String input,
+                            PalindromeAlgorithm algorithm) {
+
+        long startTime = System.nanoTime();
+        boolean result = algorithm.check(input);
+        long endTime = System.nanoTime();
+
+        long duration = endTime - startTime;
+
+        System.out.println(name);
+        System.out.println("Result : " + result);
+        System.out.println("Time   : " + duration + " ns");
+        System.out.println("-------------------------------------");
+    }
+
+    interface PalindromeAlgorithm {
+        boolean check(String input);
+    }
+
+    // ================= UC02 / UC03 =================
+    private static boolean basicLoop(String input) {
+
+        int length = input.length();
+
+        for (int i = 0; i < length / 2; i++) {
+            if (input.charAt(i) != input.charAt(length - 1 - i)) {
                 return false;
             }
-            left++;
-            right--;
         }
         return true;
     }
 
-    // Strategy 3: Stack-based approach
-    public static boolean isPalindromeStack(String input) {
-        java.util.Stack<Character> stack = new java.util.Stack<>();
+    // ================= UC04 =================
+    private static boolean charArrayMethod(String input) {
+
+        char[] array = input.toCharArray();
+        int start = 0;
+        int end = array.length - 1;
+
+        while (start < end) {
+            if (array[start] != array[end]) {
+                return false;
+            }
+            start++;
+            end--;
+        }
+        return true;
+    }
+
+    // ================= UC05 =================
+    private static boolean stackMethod(String input) {
+
+        Stack<Character> stack = new Stack<>();
+
         for (char c : input.toCharArray()) {
             stack.push(c);
         }
-        StringBuilder reversed = new StringBuilder();
-        while (!stack.isEmpty()) {
-            reversed.append(stack.pop());
+
+        for (char c : input.toCharArray()) {
+            if (c != stack.pop()) {
+                return false;
+            }
         }
-        return input.equals(reversed.toString());
+        return true;
     }
 
-    /**
-     * Application entry point for UC13.
-     *
-     * @param args Command-line arguments
-     */
-    public static void main(String[] args) {
-        String testInput = "level";
+    // ================= UC06 =================
+    private static boolean queueStackMethod(String input) {
 
-        // Run and benchmark each algorithm
-        benchmark("Reverse Method", () -> isPalindromeReverse(testInput));
-        benchmark("Two-Pointer Method", () -> isPalindromeTwoPointer(testInput));
-        benchmark("Stack Method", () -> isPalindromeStack(testInput));
+        Queue<Character> queue = new LinkedList<>();
+        Stack<Character> stack = new Stack<>();
+
+        for (char c : input.toCharArray()) {
+            queue.add(c);
+            stack.push(c);
+        }
+
+        while (!queue.isEmpty()) {
+            if (queue.remove() != stack.pop()) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    // Benchmark utility method
-    private static void benchmark(String methodName, java.util.function.Supplier<Boolean> algorithm) {
-        long start = System.nanoTime();
-        boolean result = algorithm.get();
-        long end = System.nanoTime();
-        long duration = end - start;
+    // ================= UC07 =================
+    private static boolean dequeMethod(String input) {
 
-        System.out.println("Method: " + methodName);
-        System.out.println("Input : level");
-        System.out.println("Is Palindrome? : " + result);
-        System.out.println("Execution Time : " + duration + " ns");
-        System.out.println("-----------------------------------");
+        Deque<Character> deque = new ArrayDeque<>();
+
+        for (char c : input.toCharArray()) {
+            deque.addLast(c);
+        }
+
+        while (deque.size() > 1) {
+            if (deque.removeFirst() != deque.removeLast()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // ================= UC08 =================
+    private static boolean linkedListMethod(String input) {
+
+        LinkedList<Character> list = new LinkedList<>();
+
+        for (char c : input.toCharArray()) {
+            list.add(c);
+        }
+
+        while (list.size() > 1) {
+            if (list.removeFirst() != list.removeLast()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // ================= UC09 =================
+    private static boolean recursiveMethod(String input) {
+        return recursiveCheck(input, 0, input.length() - 1);
+    }
+
+    private static boolean recursiveCheck(String s,
+                                          int start,
+                                          int end) {
+
+        if (start >= end)
+            return true;
+
+        if (s.charAt(start) != s.charAt(end))
+            return false;
+
+        return recursiveCheck(s, start + 1, end - 1);
+    }
+
+    // ================= UC10 =================
+    private static boolean normalizedMethod(String input) {
+
+        String normalized =
+                input.replaceAll("[^a-zA-Z0-9]", "")
+                        .toLowerCase();
+
+        return basicLoop(normalized);
     }
 }
