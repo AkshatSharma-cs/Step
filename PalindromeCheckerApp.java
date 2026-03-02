@@ -1,37 +1,37 @@
 /**
- * MAIN CLASS - UC06PallindromeCheckerApp
  *
- * Use Case 6: Queue + Stack Fairness Check
+ * MAIN CLASS - UC07PallindromeCheckerApp
+ *
+ * Use Case 7: Deque Based Optimized Palindrome Checker
  *
  * Description:
- * This class demonstrates palindrome validation using
- * two different data structures:
- * - Queue (FIFO - First In First Out)
- * - Stack (LIFO - Last In First Out)
+ * This class validates a palindrome using a Deque
+ * (Double Ended Queue).
  *
- * Characters are inserted into both structures and then
- * compared by removing from the front of the queue and
- * the top of the stack.
+ * Characters are inserted into the deque and then
+ * compared by removing elements from both ends:
  *
- * If all characters match, the input string is confirmed
- * as a palindrome.
+ * - removeFirst()
+ * - removeLast()
  *
- * This use case helps understand how FIFO and LIFO
- * behaviors can be combined for symmetric comparison.
+ * This avoids reversing the string and provides an
+ * efficient front-to-back comparison approach.
+ *
+ * This use case demonstrates optimal bidirectional
+ * traversal using Deque.
  *
  * @author Akshat
- * @version 6.0
+ * @version 7.0
  */
 
+import java.util.Deque;
+import java.util.ArrayDeque;
 import java.util.Scanner;
-import java.util.Queue;
-import java.util.LinkedList;
-import java.util.Stack;
 
 public class PallindromeCheckerApp {
 
     /**
-     * Application entry point for UC6.
+     * Application entry point for UC7.
      *
      * @param args Command-line arguments
      */
@@ -39,53 +39,41 @@ public class PallindromeCheckerApp {
 
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("======================================");
-        System.out.println("   UC6 - Queue + Stack Palindrome Check");
-        System.out.println("======================================");
-
+        System.out.println("=== UC7 : Deque Based Optimized Palindrome Checker ===");
         System.out.print("Enter a string: ");
+
         String input = scanner.nextLine();
 
         // Convert to lowercase for case-insensitive comparison
         input = input.toLowerCase();
 
-        // Create Queue and Stack
-        Queue<Character> queue = new LinkedList<>();
-        Stack<Character> stack = new Stack<>();
+        // Create a Deque
+        Deque<Character> deque = new ArrayDeque<>();
 
-        // Insert characters into both structures
+        // Insert all characters into deque
         for (int i = 0; i < input.length(); i++) {
-            char ch = input.charAt(i);
-            queue.add(ch);   // FIFO
-            stack.push(ch);  // LIFO
+            deque.addLast(input.charAt(i));
         }
 
         boolean isPalindrome = true;
 
-        // Compare elements
-        while (!queue.isEmpty()) {
-            char fromQueue = queue.remove();   // Front element
-            char fromStack = stack.pop();      // Top element
+        // Compare characters from both ends
+        while (deque.size() > 1) {
+            char first = deque.removeFirst();
+            char last = deque.removeLast();
 
-            if (fromQueue != fromStack) {
+            if (first != last) {
                 isPalindrome = false;
                 break;
             }
         }
 
-        System.out.println("--------------------------------------");
-
+        // Display Result
         if (isPalindrome) {
-            System.out.println("\"" + input + "\" is a PALINDROME.");
+            System.out.println("\"" + input + "\" is a Palindrome.");
         } else {
-            System.out.println("\"" + input + "\" is NOT a palindrome.");
+            System.out.println("\"" + input + "\" is NOT a Palindrome.");
         }
-
-        System.out.println("--------------------------------------");
-        System.out.println("Explanation:");
-        System.out.println("Queue removes characters in FIFO order.");
-        System.out.println("Stack removes characters in LIFO order.");
-        System.out.println("Matching both confirms symmetric structure.");
 
         scanner.close();
     }
