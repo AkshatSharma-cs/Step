@@ -63,6 +63,7 @@ public class BookMyStayApp {
         Room suite = new SuiteRoom();
 
         // Display details
+        // all details
         System.out.println("Single Room:");
         single.displayRoomDetails();
         System.out.println("Available: " + singleRoomAvailable + "\n");
