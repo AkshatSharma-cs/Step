@@ -1,18 +1,23 @@
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * ============================================================
  * MAIN CLASS - BookMyStayApp
  * ============================================================
  *
- * Use Case 2: Basic Room Types & Static Availability
+ * Use Case 3: Centralized Room Inventory Management
  *
  * Description:
- * Demonstrates room initialization using domain models
- * without centralized inventory management.
+ * Demonstrates how room availability is managed
+ * using a centralized inventory with HashMap.
  *
- * Availability is represented using simple variables
- * to highlight limitations.
+ * Room objects are used to retrieve pricing
+ * and room characteristics.
  *
- * @version 2.1
+ * No booking or search logic is introduced here.
+ *
+ * @version 3.1
  */
 public class BookMyStayApp {
 
@@ -48,32 +53,53 @@ public class BookMyStayApp {
         public SuiteRoom() { super(3, 750, 5000.0); }
     }
 
+    // Centralized RoomInventory class
+    public static class RoomInventory {
+        private Map<String, Integer> roomAvailability;
+
+        public RoomInventory() {
+            roomAvailability = new HashMap<>();
+            initializeInventory();
+        }
+
+        private void initializeInventory() {
+            roomAvailability.put("SingleRoom", 5);
+            roomAvailability.put("DoubleRoom", 3);
+            roomAvailability.put("SuiteRoom", 2);
+        }
+
+        public Map<String, Integer> getRoomAvailability() {
+            return roomAvailability;
+        }
+
+        public void updateAvailability(String roomType, int count) {
+            roomAvailability.put(roomType, count);
+        }
+    }
+
     // Application entry point
     public static void main(String[] args) {
-        System.out.println("Hotel Room Initialization\n");
-
-        // Availability variables
-        int singleRoomAvailable = 5;
-        int doubleRoomAvailable = 3;
-        int suiteRoomAvailable = 2;
+        System.out.println("Hotel Room Inventory Status\n");
 
         // Initialize room objects
         Room single = new SingleRoom();
         Room doubleR = new DoubleRoom();
         Room suite = new SuiteRoom();
 
-        // Display details
-        // all details
+        // Initialize centralized inventory
+        RoomInventory inventory = new RoomInventory();
+
+        // Display details with availability
         System.out.println("Single Room:");
         single.displayRoomDetails();
-        System.out.println("Available: " + singleRoomAvailable + "\n");
+        System.out.println("Available Rooms: " + inventory.getRoomAvailability().get("SingleRoom") + "\n");
 
         System.out.println("Double Room:");
         doubleR.displayRoomDetails();
-        System.out.println("Available: " + doubleRoomAvailable + "\n");
+        System.out.println("Available Rooms: " + inventory.getRoomAvailability().get("DoubleRoom") + "\n");
 
         System.out.println("Suite Room:");
         suite.displayRoomDetails();
-        System.out.println("Available: " + suiteRoomAvailable + "\n");
+        System.out.println("Available Rooms: " + inventory.getRoomAvailability().get("SuiteRoom") + "\n");
     }
 }
