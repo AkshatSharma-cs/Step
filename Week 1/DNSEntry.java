@@ -1,6 +1,5 @@
 // PROBLEM 3
 import java.util.*;
-
 class DNSEntry {
     String domain;
     String ipAddress;
@@ -17,7 +16,7 @@ class DNSEntry {
     }
 }
 
-public class DNSCache {
+ class DNSCache {
     private final Map<String, DNSEntry> cache;
     private int hits;
     private int misses;

@@ -1,3 +1,5 @@
+package PACKAGE_NAME;
+
 /**
  * ================================================
  * MAIN CLASS - UseCase13PalindromeCheckerApp
